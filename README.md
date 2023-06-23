@@ -12,7 +12,7 @@ However, in order to get closer to a realistic situation, the model that we deci
 
 # Mathematical modeling of the TOPTW
 
-## Función objetivo
+## Objective Function
 
 $${Max} \sum_{i=2}^{N-1} \sum_{j=2}^N S_i x_{i j}$$
 
