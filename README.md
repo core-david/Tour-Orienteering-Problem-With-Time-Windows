@@ -1,4 +1,4 @@
-This project arises from the interest to plan the best possible experience of a tourist visiting a new city given a budget and daily time limit. 
+This project arises from the interest to plan the best possible experience for a tourist visiting a new city given a budget and daily time limit. 
 
 The mathematical modeling is an adaptation of the one presented in the paper "The orienteering proble: A survey" 
 
