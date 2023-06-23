@@ -1,132 +1,40 @@
-# Problema de Orientación con Intervalos de Tiempo (*OPTW*)
+This project arises from the interest to plan the best possible experience of a tourist visiting a new city given a budget and daily time limit. 
 
-El modelo conocido como el *Problema de Orientación* (OP por sus siglas
-en inglés), se basa en proponer una ruta en la cual se **maximice** la
-satisfacción del usuario en su visita a los lugares propuestos por el
-sistema. Estos lugares serán catalogados como **POIs** (*Points of
-Interest*), los cuales cada uno de ellos tendrá una recompensa o un
-puntaje cualitativo que se basará en la satisfacción de clientes pasados
-obtenidos de las calificaciones de los lugares en Google Maps, el cual
-varia de 0 a 5.
+The mathematical modeling is an adaptation of the one presented in the paper "The orienteering proble: A survey" 
 
-Sin embargo, con motivo de aproximarnos más a una situación realista, el
-modelo que decidimos implementar es conocido como el **problema de
-orientación con intervalos de tiempo**(OPTW) el cual considera el tiempo
-que se desea pasar mínimamente en cada lugar además de los tiempos de
-apertura y cierre de cada lugar (window intervals), lo cual nos aproxima
-de mejor forma a una situación real.
+Link to the article: https://www.sciencedirect.com/science/article/abs/pii/S0377221710002973
 
-La razón principal por la cual decidimos escoger este modelo por encima
-de otros mas conocidos o utilizados en la industria-tal como el
-Traveling Salesman Problem (TSP), se debe a que se aproxima más a la
-situación de un turista promedio, el cual busca maximizar su experiencia
-en vez de minimizar tiempos de traslado o costo.
+# Tour Orienteering Problem with Time Windows (TOPTW)
 
-Debido a que el cliente podría no visitar todos los lugares de interés,
-ya sea por no querer sobrepasar su presupuesto o el tiempo de su
-estancia en la ciudad, nos vemos obligados a agregar **restricciones**
-al modelo base (OPTW), los cuales se describirán más adelante, tanto las
-restricciones base como las que agregamos.
+The model known as the **Orienteering Problem (OP)**, is based on proposing a route that **maximizes** the User satisfaction in their visit to the places proposed by the system. These places will be cataloged as **POIs (Points of Interest)**, each of which will have a reward or a qualitative score that will be based on the satisfaction of past customers obtained from the qualifications of the places in Google Maps, which ranges from 0 to 5.
 
-## Modelación Matemática del OPTW
+However, in order to get closer to a realistic situation, the model that we decided to implement is known as the **problem of orientation with time intervals (OPTW)** which considers the time that you want to spend minimally in each place in addition to the times of opening and closing of each place (window intervals), which brings us closer to in a better way to a real situation.
 
-En el OPTW, a cada vértice se le asigna una ventana de tiempo
-$[O_i,C_i]$ y una visita a un vértice solo puede comenzar durante esta
-ventana de tiempo. OPTW se puede formular como un problema entero mixto
-con las siguientes variables de decisión: $x_ij = 1$ si una visita al
-vértice $i$ es seguida por una visita al vértice $j – 0$ en caso
-contrario; $y_i = 1$ si se visita el vértice $i – 0$ en caso contrario;
-$s_i =$ el comienzo del servicio en el vértice $i$; $M$ una gran
-constante.
-
-$$\operatorname{Max} \sum_{i=2}^{N-1} \sum_{j=2}^N S_i x_{i j}$$
-
-$$\sum_{j=2}^N x_{1 j}=\sum_{i=1}^{N-1} x_{i N}=1$$
-
-$$\sum_{i=1}^{N-1} x_{i k}=\sum_{j=2}^N x_{k j} \leq 1 ; \quad \forall k=2, \ldots, N-1,$$
-
-$$s_i+t_{i j}-s_j \leq M\left(1-x_{i j}\right) ; \quad \forall i, j=1, \ldots, N$$
-
-$$\sum_{i=1}^{N-1} \sum_{j=2}^N t_{i j} x_{i j} \leq T_{\max },$$
-
-$$O_i \leq s_i ; \quad \forall i=1, \ldots, N,$$
-
-$$s_i \leq C_i ; \quad \forall i=1, \ldots, N,$$
-
-$$x_{i j} \in\{0,1\} ; \quad \forall i, j=1, \ldots, N .$$
-
-La función objetivo (7) maximiza la puntuación total recopilada. Las
-restricciones (8) garantizan que el camino comienza en el vértice 1 y
-termina en el vértice N. Las restricciones (9) determinan la
-conectividad y aseguran que cada vértice se visita como máximo una vez.
-Las restricciones (10) aseguran la línea de tiempo de la ruta y la
-restricción (11) limita el presupuesto de tiempo. Las restricciones (12)
-y (13) restringen el inicio del servicio al tiempo ventana. La ventana
-de tiempo del vértice final N puede reemplazar la restricción\[18\].
-
-# Adaptación del modelo matemático al contexto del problema
-
-Para ver los resultados y capacidades de nuestro modelo adaptado al
-problema introducido anteriormente, estableceremos un numero caso
-hipotético de un cliente. Imaginemos que un turista de la ciudad de
-México quiere realizar un viaje de **dos días a la ciudad de Puebla**,
-donde se hospedará en el Hotel Gilfer, ubicado en el centro de la
-ciudad. También sabemos previamente que tiene un presupuesto para gastar
-de **\$800** y **\$600** por día, respectivamente. También supondremos
-que el cliente no quiere estar todo el día conociendo la ciudad, por lo
-que estableceremos un tiempo máximo de 8 horas para el primer día y de 6
-para el segundo.
+# Mathematical modeling of the TOPTW
 
 ## Función objetivo
 
-$$\operatorname{Max} \sum_{i=2}^{N-1} \sum_{j=2}^N S_i x_{i j}$$
+$${Max} \sum_{i=2}^{N-1} \sum_{j=2}^N S_i x_{i j}$$
 
-La función objetivo se mantiene igual a la formulación base del OPTW.
 
-Lo que está haciendo esta función es multiplicar el puntaje obtenido de
-las calificaciones del lugar en google maps por 1 o 0 dependiendo si se
-visita el lugar o no, esto lo hace por cada vértice($x_{i,j}$) en
-nuestro grafo.
+What this function is doing is multiplying the score obtained from the qualifications of the place in google maps by 1 or 0 depending on whether it is visit the place or not, it does this for each vertex($x_{i,j}$) in our graph.
 
-## Conjuntos
 
-Los conjuntos se utilizan para representar y manejar la información
-sobre los nodos que son parte del problema, permitiendo su uso en
-ecuaciones, variables y parámetros del modelo. Adicionalmente, se
-utilizan alias para el conjunto $i$, en este caso $j$ y $k$, que
-permiten una manipulación más flexible de las variables y parámetros en
-las ecuaciones. Los alias pueden ser usados en situaciones donde
-necesitamos referirnos a los mismos elementos del conjunto original en
-contextos diferentes, como por ejemplo, al definir rutas de un lugar a
-otro en un problema de optimización de ruta. De esta manera, el conjunto
-original y sus alias permiten una representación más completa y eficaz
-de las relaciones y restricciones en el modelo de optimización.
+## Sets
 
-En nuestro problema utilizamos el siguiente conjunto $i = 1... 12$, ya
-que son 10 lugares posibles a visitar, el hotel o lugar donde nos
-estamos hospedando mas un vértice dummy. El vértice dummy lo agregamos
-debido a que el modelo base nos arroja una ruta del vértice 1 al vértice
-N, pero nosotros queremos que regrese al vértice 1, es decir, que cierre
-la ruta. Para lograr lo anterior mencionado agregamos un vértice dummy,
-esto quiere decir que es un vértice que no existe, pero nos sirve para
-que el vértice N tenga los valores del vértice 1, así cuando uno llegue
-al vértice N, es como si hubiera llegado al vértice 1.
+Sets are used to represent and manage information on the nodes that are part of the problem, allowing its use in equations, variables and parameters of the model. Additionally, it use aliases for the set $i$, in this case $j$ and $k$, which allow more flexible manipulation of variables and parameters in The equations. Aliases can be used in situations where we need to refer to the same elements of the original set in different contexts, such as when defining routes from one place to another on a route optimization problem. In this way, the set original and its aliases allow a more complete and efficient representation of the relationships and constraints in the optimization model.
 
-## Parámetros
+In our problem we use the following set $i = 1... 12$, there are 10 possible places to visit, the hotel or place where we are hosting and one more dummy vertex. We add the dummy vertex because the base model returns a path from vertex 1 to vertex N, but we want it to return to vertex 1, that is, to close the route. To achieve the above mentioned we add a dummy vertex, This means that it is a vertex that does not exist, but it helps us to that vertex N has the values ​​of vertex 1, so when one arrives to vertex N, it is as if it had reached vertex 1.
 
-Denominamos parámetros a los valores que conocemos antes de resolver el
-problema, para nuestro caso particular, vamos a ocupar conocer los
-valores de la recompensa de cada lugar; los tiempos de apertura y cierre
-de los establecimientos; el tiempo mínimo transcurrido que el cliente
-quiera estar en el lugar y el costo de visitarlo. Estamos manejando la
-unidad de minutos cuando estamos hablando de tiempo y de pesos mexicanos
-cuando hablamos del costo.
+## Parameters
+
+We call parameters the values ​​we know before solving the problem, for our particular case, we are going to occupy knowing the reward values ​​of each place; opening and closing times of the establishments; the minimum elapsed time that the client want to be in the place and the cost of visiting it. We are handling the unit of minutes when we are talking about time and Mexican pesos when we talk about the cost.
 
 <div class="center">
 
 <div id="tab:internacionales NR 2022">
 
-|            **Lugar**            | **Recompensa** | **Apertura** | **Cierre** | **Estancia** | **Costo** |
+|            **Place**            | **Score**      | **Opening**  | **Closing**| **Stay**     | **Cost**  |
 |:-------------------------------:|:--------------:|:------------:|:----------:|:------------:|:---------:|
 |              Hotel              |       0        |      0       |     0      |      0       |     0     |
 |       San Andrés Cholula        |      4.7       |     540      |    1020    |     120      |     0     |
@@ -139,31 +47,15 @@ cuando hablamos del costo.
 |          Museo Amparo           |      4.7       |     600      |    1080    |      90      |    80     |
 | Museo Internacional del Barroco |      4.7       |     600      |    1140    |      90      |    25     |
 |  Parque Del Cerro de Amalucan   |      3.9       |     420      |    1020    |      60      |    50     |
-|          Vértice Dummy          |       0        |      0       |    1440    |      0       |     0     |
+|          Dummy vertex           |       0        |      0       |    1440    |      0       |     0     |
 
-Parámetros utilizados en el modelo. Los tiempos de apertura,cierre y
-estancia de lugar están dados en el sistema de 24 horas convertidos en
-minutos.
+The opening, closing and place stay are given in the 24-hour system converted into minutes.
 
 </div>
 
 </div>
 
-La recompensa en el vértice dummy es de 0 para que no sea considerada en
-nuestra función objetivo, ya que este vértice siempre sera visitado por
-la formulación del modelo, pero como no existe este lugar no queremos
-agregar algo a la función objetivo. Cuando un lugar tiene un valor de 0
-en la columna de apertura, representa que se puede visitar a cualquier
-hora del día, en el caso de la columna de cierre, el vértice dummy tiene
-un valor de 1440 que en horas son 24, lo que indica que esta abierto
-todo el día, en el caso del hotel este valor no importa porque como
-siempre vamos a partir de el, y el modelo dice que siempre vamos a
-llegar al vértice N, entonces el valor que toma el vértice N (vértice
-dummy) representa el valor del hotel, es decir que podemos llegar a
-cualquier hora al hotel. En la columna de estancia y costo, tanto la
-variable dummy como el hotel toman valores de 0, en el caso de la
-variable como no existe no tiene sentido asignar un costo ni un tiempo
-de estancia.
+The reward in the dummy vertex is 0 so that it is not considered in our objective function, since this vertex will always be visited by the formulation of the model, but since this place does not exist, we do not want to add something to the objective function. When a place has a value of 0 in the opening column, represents that you can visit any time of day, in the case of the closing column, the dummy vertex has a value of 1440 that in hours are 24, which indicates that it is open all day, in the case of the hotel this value does not matter because as we always go from it, and the model says that we will always reach vertex N, then the value that vertex N takes (vertex dummy) represents the value of the hotel, that is, we can reach any time to the hotel. In the stay and cost column, both the dummy variable such as the hotel take values ​​of 0, as the variable does not exist, it does not make sense to assign a cost or a time of stay.
 
 <div class="center">
 
@@ -184,106 +76,55 @@ de estancia.
 |    11     |  31   |  35   |  34   |  26   |  26   |  25   |  21   |  29   |  27   |   32   |   0    |   31   |
 |    12     |   0   |  29   |  23   |   9   |  12   |  10   |  16   |  10   |   9   |   25   |   31   |   0;   |
 
-Tabla de costo de tiempo entre los lugares escogidos en minutos
+Table of time cost between the chosen places in minutes
 
 </div>
 
 </div>
 
-Esta tabla muestra el tiempo en minutos de traslado entre los distintos
-lugares que seleccionamos. Es importante notar que el vértice dummy (en
-este caso el 12) tiene los mismos valores que el vértice uno, esto es
-para lograr que cuando se llegue de cualquier vértice al vértice dummy
-sea lo mismo de llegar de cualquier vértice al vértice 1. Efectivamente
-cerrando la ruta.
+This table shows the travel time in minutes between the different places we select. It is important to note that the dummy vertex (in this case, 12) has the same values ​​as vertex one, this is done in order to achieve that when you get from any vertex to the dummy vertex be the same as arriving from any vertex to vertex 1. Effectively closing the route.
 
 ## Variables
 
-Para implementar correctamente el modelo utilizamos dos variables,
-primero utilizamos una variable de tipo binaria. Esta variable va a
-resultar en 1 si se va visitar del nodo i al nodo j o en 0 si no se va a
-visitar del nodo i al nodo j. $$x_{(i,j)}$$
+In the model there are two variables, a variable of binary type. The first variable will result in 1 if node i to node j is going to be visited or 0 if it is not going to
+visit from node i to node j.
 
-La otra variable a usar será de tipo continua positiva. La variable s(i)
-se usara para registrar y determinar el horario exacto en el que se
-visitara el lugar, el cual sera restringido por los horarios de apertura
-y cierre de dicho establecimiento.
+$$x_{(i,j)}$$
+
+The other variable to use will be of continuous positive type. The variable s(i) will be used to record and determine the exact time in which visit the place, which will be restricted by opening hours and closure of said establishment.
 
 $$s(i)$$
 
-## Restricciones
+## Restrictions
 
-1\) $$\sum_{j=2}^N x_{1 j}=\sum_{i=1}^{N-1} x_{i N}=1$$ La primera
-restricción del modelo garantiza que se empiece en el vértice 1 y
-termine en el vértice N. Esta restricción se mantuvo igual que en el
-modelo base, aunque con una modificación al número de elementos totales,
-esto es porque el modelo asegura que se va a acabar en el vértice N,
-pero nosotros queremos acabar en el vértice 1, por lo que se agrega un
-vértice dummy, esto se elaboro en la sección de conjuntos.
+1\) $$\sum_{j=2}^N x_{1 j}=\sum_{i=1}^{N-1} x_{i N}=1$$ 
+The first model constraint guarantees that we start at vertex 1 and terminate at vertex N. This constraint remained the same as in the base model, although with a modification to the number of total elements, this is because the model ensures that it will end at vertex N, but we want to end up at vertex 1, so we add a dummy vertex, this was elaborated in the sets section.
 
-2\)
-$$\sum_{i=1}^{N-1} x_{i k}=\sum_{j=2}^N x_{k j} \leq 1 ; \quad \forall k=2, \ldots, N-1,$$
-Esta restricción asegura la conectividad de los vértices así como que
-solo se visiten una sola vez. No hicimos ninguna modificación a esta
-restricción.
+2\) $$\sum_{i=1}^{N-1} x_{i k}=\sum_{j=2}^N x_{k j} \leq 1 ; \quad \forall k=2, \ldots, N-1,$$
+This constraint ensures the connectivity of the vertices as well as that only visit once. We did not make any modifications to this restriction.
 
-3\)
-$$s_i+t_{i j}+ y_i-s_j \leq M\left(1-x_{i j}\right) ; \quad \forall i, j=1, \ldots, N$$
-Esta restricción asegura la cronología del camino. Tuvimos que agregar
-un parámetro $y_i$ para considerar el tiempo de estancia mínimo que se
-desea pasar por lugar.
+3\) $$s_i+t_{i j}+ y_i-s_j \leq M\left(1-x_{i j}\right) ; \quad \forall i, j=1, \ldots, N$$
+This constraint ensures the chronology of the path, we had to add a parameter $y_i$ to consider the minimum stay time to be you want to go through place.
 
 4\) $$\sum_{i=1}^{N-1} \sum_{j=2}^N t_{i j} x_{i j} \leq T_{\max },$$
-Esta restricción asegura que se cumpla con la restricción del
-presupuesto del tiempo. No hicimos ninguna modificación a esta
-restricción.
+This constraint ensures that the constraint of the time budget, we did not make any modifications to this restriction.
 
-5\) $$O_i \leq s_i ; \quad \forall i=1, \ldots, N,$$ Esta restricción
-asegura que la hora en que se llega a un lugar sea mayor o igual a la
-hora que abre el lugar, no se puede llegar a un lugar si todavía no esta
-abierto. No hicimos ninguna modificación a esta restricción.
+5\) $$O_i \leq s_i ; \quad \forall i=1, \ldots, N,$$
+Ensures that the time a place is reached is greater than or equal to the time the place opens, you can't get to a place if it's not there yet open. We did not make any changes to this restriction.
 
-6\) $$s_i \leq C_i ; \quad \forall i=1, \ldots, N,$$ Esta restricción
-asegura que la hora en que se llega a un lugar sea menor o igual a la
-hora que cierra el lugar. No hicimos ninguna modificación a esta
-restricción.
+6\) $$s_i \leq C_i ; \quad \forall i=1, \ldots, N,$$ 
+Ensures that the time a place is reached is less than or equal to the time the place closes. We did not make any modifications to this restriction.
 
-7\) $$x_{i, j} \in\{0,1\} ; \quad \forall i, j=1, \ldots, N .$$ Esta
-restricción nos dice que la variable $x_{i,j}$ es una variable binaria,
-solo puede tomar los valores 0(no se visita) o 1 (se visita) del nodo
-$i$ al nodo $j$. $i$ y $j$ toman del 1 hasta el número total de
-vértices.
+7\) $$x_{i, j} \in\{0,1\} ; \quad \forall i, j=1, \ldots, N .$$ 
+This constraint tells us that the variable $x_{i,j}$ is a binary variable, can only take the values ​​0 (not visited) or 1 (visited) of the node $i$ to node $j$. $i$ and $j$ take from 1 to the total number of vertices.
 
-8\)
-$$\sum_{i=1}^{N-1} \sum_{j=2}^N t_{i,j} x_{i j} * 1.48 + \sum_{i=1}^{N-1} \sum_{j=2}^N P_{i} x_{i j} \leq \textit{Presupuesto Total}$$
-Esta restricción la añadimos para considerar el presupuesto total de la
-persona. Dentro de la restricción estamos considerando el costo del
-transporte, esto es asumiendo que la persona llego al lugar turístico
-con un coche sedan, el cual se calcula multiplicando el tiempo de
-transporte por una constate ’C’ que obtuvimos mediante una relación, mas
-adelante se explica a detalle como se obtuvo, y por ultimo se multiplica
-por la variable $x_{i,j}$, es decir, si se visito o no, si no se visita
-un lugar la variable es 0, por lo que toda la multiplicación será 0.
-Además de considerar el costo de visitar cada lugar, esto se hace en la
-segunda parte de la suma, en donde se multiplica el costo de visitar el
-lugar por la variable $x_{i,j}$, es decir si se visito o no el lugar.
+8\) $$\sum_{i=1}^{N-1} \sum_{j=2}^N t_{i,j} x_{i j} * 1.48 + \sum_{i=1}^{N-1} \sum_{j=2}^N P_{i} x_{i j} \leq \textit{Budget}$$
+We add this restriction to consider the total budget of the person. Within the constraint we are considering the cost of the transportation, this is assuming that the person arrived at the tourist place with a sedan car, which is calculated by multiplying the driving time transport by a constant 'C' that we obtained through a relation, it is later explained how it was obtained, and finally it is multiplied by the variable $x_{i,j}$, that is, if it was visited or not, if it is not visited a place variable is 0, so all multiplication will be 0. In addition to considering the cost of visiting each location, this is done in the second part of the sum, where the cost of visiting the place by the variable $x_{i,j}$, that is, if the place was visited or not.
 
-Para llegar a la constante ’C’, empezamos tomando las medidas de tiempo
-entre la distancia más larga y el tiempo que toma para llegar ahí, a
-partir de esto hacemos una regla de 3 para encontrar cuantos kilómetros
-se recorrerían en 60 minutos, terminaron siendo 59km. Después mediante
-una búsqueda de internet encontramos que aproximadamente un carro sedan
-gasta en promedio 7 litros de gasolina por cada 100 kilómetros. Volvemos
-a hacer una regla de 3 para encontrar cuantos litros se gastan en 59km
-los cuales acabaron siendo 3.92 litros. Al tener la cantidad de litros
-gastados por 60 minutos hacemos una última regla de 3 para encontrar
-cuantos litros se gastan por minuto, nos dio el resultado de 0.0653
-litros. Después de otra búsqueda encontramos que el precio de la
-gasolina por litro es de 22.65 pesos y multiplicando estos últimos dos
-valores llegamos a la conclusión que la constante de pesos por minuto es
-de 1.48, por lo cual se multiplica este valor al tiempo de transporte
-entre nodos.
-
+To arrive at the constant 'C', we start by taking the measurements of time between the longest distance and the time it takes to get there, to from this we make a rule of 3 to find how many kilometers they would be traveled in 60 minutes, ended up being 59km. after by An internet search found that approximately one sedan car
+spends an average of 7 liters of gasoline per 100 kilometers.
+We return to make a rule of 3 to find how many liters are spent in 59km which ended up being 3.92 liters. Having the number of liters spent for 60 minutes we make a last rule of 3 to findhow many liters are spent per minute, gave us the result of 0.0653 liters. After another search we found that the price of the gasoline per liter is 22.65 pesos and multiplying these last two values ​​we conclude that the weights per minute constant is of 1.48, for which this value is multiplied by the transport time between nodes.
+The data of the previous relation is from 2023.
 
 
 
